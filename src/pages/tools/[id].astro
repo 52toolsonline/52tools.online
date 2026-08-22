@@ -1,0 +1,91 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { TOOLS_DATA } from '../../data/tools.js';
+
+export function getStaticPaths() {
+  return TOOLS_DATA.map((tool) => ({
+    params: { id: tool.id },
+    props: { tool },
+  }));
+}
+
+const { tool } = Astro.props;
+---
+<BaseLayout
+  title={`${tool.name} — 52 Tools`}
+  description={tool.description}
+  currentPath={`/tools/${tool.id}`}
+>
+  <div class="t52-tool-page">
+    <a href="/" class="t52-tool-page-back">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+      Back to 52 Tools
+    </a>
+
+    <div class="t52-tool-page-head">
+      <div class="t52-img-box t52-img-box--tool" style="margin-bottom:0;" id="t52-page-img-box">
+        <img src={`/assets/images/${tool.id}.png`} alt={tool.name} loading="lazy" id="t52-page-img">
+      </div>
+      <div style="flex:1;">
+        <h1 class="t52-tool-page-title">{tool.name}</h1>
+        <p class="t52-tool-page-desc">{tool.description}</p>
+      </div>
+      <button
+        type="button"
+        class="t52-fav-star"
+        id="t52-page-fav-star"
+        data-fav-id={tool.id}
+        aria-label="Add to favorites"
+        title="Add to favorites"
+        style="position:static;"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      </button>
+    </div>
+
+    <div class="t52-tool-page-meta">
+      <span class="t52-tool-page-badge">{tool.category}</span>
+      {tool.tags.map((tag) => <span class="t52-tool-page-badge">{tag}</span>)}
+    </div>
+
+    <div class="t52-tool-page-panel">
+      The {tool.name} tool will run here. This page is a real, dedicated route
+      (<code>/tools/{tool.id}</code>) generated at build time — not a section
+      of the homepage.
+    </div>
+  </div>
+
+  <script define:vars={{ toolId: tool.id }}>
+    // Wire up this page's own favorite star. Reuses the same
+    // '52tools_favorites' localStorage key as every other favorite control
+    // on the site, so state stays in sync everywhere.
+    (function () {
+      const FAV_KEY = '52tools_favorites';
+      function getFavorites() {
+        try {
+          const arr = JSON.parse(localStorage.getItem(FAV_KEY) || '[]');
+          return Array.isArray(arr) ? arr : [];
+        } catch (e) { return []; }
+      }
+      function setFavorites(arr) {
+        try { localStorage.setItem(FAV_KEY, JSON.stringify(arr)); } catch (e) {}
+      }
+
+      const star = document.getElementById('t52-page-fav-star');
+      function paint() {
+        const active = getFavorites().includes(toolId);
+        star.classList.toggle('active', active);
+        const label = active ? 'Remove from favorites' : 'Add to favorites';
+        star.setAttribute('aria-label', label);
+        star.setAttribute('title', label);
+      }
+      star.addEventListener('click', () => {
+        let favs = getFavorites();
+        favs = favs.includes(toolId) ? favs.filter((f) => f !== toolId) : [...favs, toolId];
+        setFavorites(favs);
+        paint();
+      });
+      paint();
+    })();
+  </script>
+</BaseLayout>

@@ -1,0 +1,47 @@
+---
+const { currentPath = '/' } = Astro.props;
+---
+<header class="t52-header">
+  <div class="t52-container t52-header-inner">
+    <a href="/" class="t52-brand" style="text-decoration:none;">
+      <span class="t52-brand-mark">52</span> Tools
+    </a>
+
+    <nav class="t52-nav">
+      <a href="/" class={currentPath === '/' ? 'active' : ''}>Home</a>
+      <a href="/tools">All Tools</a>
+      <a href="/#t52-cat-grid" class="t52-dropdown">Categories <span class="t52-caret"></span></a>
+      <a href="/#t52-tools-grid">Popular</a>
+      <a href="/new-tools">New Tools</a>
+      <a href="/blog">Blog</a>
+      <a href="/about">About</a>
+    </nav>
+
+    <div class="t52-header-actions">
+      <button class="t52-icon-btn" id="t52-header-search-btn" aria-label="Search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </button>
+      <button class="t52-icon-btn" id="t52-theme-btn" aria-label="Toggle theme">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+      <button class="t52-btn-primary" id="t52-favorites-btn" aria-haspopup="dialog">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.26L21.5 9l-4.75 4.63L17.9 21 12 17.77 6.1 21l1.15-7.37L2.5 9l6.6-.74z"/></svg>
+        Favorites<span class="t52-fav-count-badge" id="t52-fav-count" hidden>0</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- ===================== FAVORITES MODAL (sitewide) ===================== -->
+<div class="t52-fav-backdrop" id="t52-fav-backdrop"></div>
+<div class="t52-fav-modal" id="t52-fav-modal" role="dialog" aria-modal="true" aria-labelledby="t52-fav-modal-title">
+  <div class="t52-fav-modal-head">
+    <h3 id="t52-fav-modal-title">Your Favorites</h3>
+    <button class="t52-fav-modal-close" id="t52-fav-modal-close" aria-label="Close favorites">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <div class="t52-fav-modal-body" id="t52-fav-modal-body">
+    <!-- injected by client script -->
+  </div>
+</div>
