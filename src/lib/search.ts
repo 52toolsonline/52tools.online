@@ -99,8 +99,6 @@ export const popularSearchSlugs = [
   "word-counter",
   "case-converter",
   "uuid-generator",
-  "password-generator",
-  "timestamp-converter",
 ];
 
 export function getPopularSearches(): Tool[] {

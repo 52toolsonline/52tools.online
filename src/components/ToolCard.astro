@@ -1,6 +1,6 @@
 ---
 import * as icons from "@lucide/astro";
-import { ArrowUpRight } from "@lucide/astro";
+import { ExternalLink } from "@lucide/astro";
 import type { Tool } from "../data/tools";
 
 interface Props {
@@ -11,33 +11,58 @@ const { tool } = Astro.props;
 
 // icons module is keyed by PascalCase icon names, matching our data.
 const IconComponent = (icons as Record<string, any>)[tool.icon] ?? icons.Wrench;
+const isAvailable = Boolean(tool.url);
+
+const cardClasses =
+  "group relative flex flex-col rounded-[var(--radius-md)] border border-[var(--border-color)] bg-[var(--surface-raised)] p-5 transition-colors";
+const interactiveClasses = "hover:border-[var(--text-primary)] focus-visible:outline-2 focus-visible:outline-[var(--text-primary)]";
+const disabledClasses = "opacity-70";
 ---
 
-<a
-  href={`/tools/${tool.slug}`}
-  class="group relative flex flex-col rounded-[var(--radius-md)] border border-[var(--border-color)] bg-[var(--surface-raised)] p-5 transition-colors hover:border-[var(--text-primary)] focus-visible:outline-2 focus-visible:outline-[var(--text-primary)]"
->
-  <div class="flex items-start justify-between">
-    <span
-      class="flex h-9 w-9 items-center justify-center rounded-[var(--radius-sm)] border border-[var(--border-color)] text-[var(--text-primary)]"
+{
+  isAvailable ? (
+    <a
+      href={tool.url}
+      target="_blank"
+      rel="noopener noreferrer"
+      class={`${cardClasses} ${interactiveClasses}`}
     >
-      <IconComponent class="h-4 w-4" aria-hidden="true" />
-    </span>
-    <ArrowUpRight
-      class="h-4 w-4 text-[var(--text-secondary)] opacity-0 transition-opacity group-hover:opacity-100"
-      aria-hidden="true"
-    />
-  </div>
-
-  <h3 class="mt-4 font-display text-sm font-semibold text-[var(--text-primary)]">
-    {tool.name}
-    {
-      tool.status === "soon" && (
-        <span class="ml-2 rounded-full border border-[var(--border-color)] px-1.5 py-0.5 align-middle font-mono text-[10px] uppercase tracking-wide text-[var(--text-secondary)]">
-          Soon
+      <div class="flex items-start justify-between">
+        <span class="flex h-9 w-9 items-center justify-center rounded-[var(--radius-sm)] border border-[var(--border-color)] text-[var(--text-primary)]">
+          <IconComponent class="h-4 w-4" aria-hidden="true" />
         </span>
-      )
-    }
-  </h3>
-  <p class="mt-1.5 text-sm leading-relaxed text-[var(--text-secondary)]">{tool.description}</p>
-</a>
+        <ExternalLink
+          class="h-4 w-4 text-[var(--text-secondary)] opacity-0 transition-opacity group-hover:opacity-100"
+          aria-hidden="true"
+        />
+      </div>
+
+      <h3 class="mt-4 font-display text-sm font-semibold text-[var(--text-primary)]">{tool.name}</h3>
+      <p class="mt-1.5 text-sm leading-relaxed text-[var(--text-secondary)]">{tool.description}</p>
+
+      {tool.features && tool.features.length > 0 && (
+        <ul class="mt-3 flex flex-wrap gap-1.5">
+          {tool.features.slice(0, 3).map((feature) => (
+            <li class="rounded-full border border-[var(--border-color)] px-2 py-0.5 font-mono text-[10px] text-[var(--text-secondary)]">
+              {feature}
+            </li>
+          ))}
+        </ul>
+      )}
+    </a>
+  ) : (
+    <div class={`${cardClasses} ${disabledClasses}`} aria-disabled="true">
+      <div class="flex items-start justify-between">
+        <span class="flex h-9 w-9 items-center justify-center rounded-[var(--radius-sm)] border border-[var(--border-color)] text-[var(--text-primary)]">
+          <IconComponent class="h-4 w-4" aria-hidden="true" />
+        </span>
+        <span class="rounded-full border border-[var(--border-color)] px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-wide text-[var(--text-secondary)]">
+          Coming soon
+        </span>
+      </div>
+
+      <h3 class="mt-4 font-display text-sm font-semibold text-[var(--text-primary)]">{tool.name}</h3>
+      <p class="mt-1.5 text-sm leading-relaxed text-[var(--text-secondary)]">{tool.description}</p>
+    </div>
+  )
+}

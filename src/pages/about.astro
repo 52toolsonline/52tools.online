@@ -1,28 +1,29 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import { tools } from "../data/tools";
+import { getAvailableTools } from "../data/tools";
 import { categories } from "../data/categories";
 
-const liveCount = tools.filter((t) => t.status === "live").length;
+const availableCount = getAvailableTools().length;
 ---
 
 <BaseLayout
   title="About"
-  description="52 Tools is a precise, fast collection of practical web utilities for creators, developers, and problem solvers."
+  description="52 Tools is a directory for discovering practical web utilities, each built and hosted on its own dedicated site."
   path="/about"
 >
   <div class="mx-auto max-w-3xl px-4 py-16 sm:px-6 lg:px-8">
     <h1 class="font-display text-3xl font-semibold text-[var(--text-primary)] sm:text-4xl">About 52 Tools</h1>
 
     <p class="mt-6 text-base leading-relaxed text-[var(--text-secondary)]">
-      52 Tools is a growing collection of practical, no-nonsense web utilities — formatters, converters,
-      generators, and calculators — built for the moments when you just need something to work, quickly,
-      without an account or a cluttered interface.
+      52 Tools is a directory for discovering practical, no-nonsense web utilities — formatters, converters,
+      generators, and calculators. Each tool is its own independent product, built and hosted on its own
+      dedicated site. 52 Tools exists to help you find the right one quickly.
     </p>
 
     <p class="mt-4 text-base leading-relaxed text-[var(--text-secondary)]">
-      The name is a starting point, not a limit. New tools are added regularly across {categories.length}{" "}
-      categories, and {liveCount} are fully functional today.
+      The name is a starting point, not a limit. New tools are catalogued regularly across {categories.length}{" "}
+      categories, and {availableCount} are live and ready to open today. Clicking a tool always opens its site
+      in a new tab, so this directory stays right where you left it.
     </p>
 
     <h2 class="mt-10 font-display text-xl font-semibold text-[var(--text-primary)]">Principles</h2>

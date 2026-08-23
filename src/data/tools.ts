@@ -1,13 +1,21 @@
-export type ToolStatus = "live" | "soon";
-
 export interface Tool {
   slug: string;
   name: string;
   category: string;
   description: string;
+  /** Optional short feature bullets shown on tool cards/listings. */
+  features?: string[];
   keywords: string[];
   icon: string;
-  status: ToolStatus;
+  /**
+   * Canonical URL of the actual tool, hosted on its own separate domain
+   * and deployment. Omit if the tool has not been built/deployed yet —
+   * the directory will show it as "Coming soon" instead of linking out.
+   *
+   * IMPORTANT: replace these placeholder subdomains with the real
+   * deployed URL for each tool as it goes live.
+   */
+  url?: string;
 }
 
 export const tools: Tool[] = [
@@ -17,27 +25,30 @@ export const tools: Tool[] = [
     name: "Text Replacer",
     category: "text",
     description: "Find and replace text with case-sensitive and whole-word matching.",
+    features: ["Case-sensitive matching", "Whole-word matching", "Regex support"],
     keywords: ["find", "replace", "substitute", "text", "search and replace"],
     icon: "Replace",
-    status: "live",
+    url: "https://text-replacer.52tools.online",
   },
   {
     slug: "word-counter",
     name: "Word Counter",
     category: "text",
     description: "Count words, characters, lines, sentences, and paragraphs.",
+    features: ["Live word & character counts", "Sentence and paragraph stats"],
     keywords: ["words", "characters", "count", "length", "reading time"],
     icon: "AlignLeft",
-    status: "live",
+    url: "https://word-counter.52tools.online",
   },
   {
     slug: "case-converter",
     name: "Case Converter",
     category: "text",
     description: "Convert text between uppercase, lowercase, title case, camelCase, and more.",
+    features: ["8 case formats", "One-click copy"],
     keywords: ["uppercase", "lowercase", "camelcase", "snake_case", "kebab-case", "title case"],
     icon: "CaseSensitive",
-    status: "live",
+    url: "https://case-converter.52tools.online",
   },
   {
     slug: "character-counter",
@@ -46,7 +57,6 @@ export const tools: Tool[] = [
     description: "Count characters with and without spaces.",
     keywords: ["character", "count", "length"],
     icon: "Hash",
-    status: "soon",
   },
   {
     slug: "text-sorter",
@@ -55,7 +65,6 @@ export const tools: Tool[] = [
     description: "Sort lines alphabetically, numerically, or by length.",
     keywords: ["sort", "order", "lines", "alphabetize"],
     icon: "ArrowDownAZ",
-    status: "soon",
   },
   {
     slug: "remove-duplicate-lines",
@@ -64,7 +73,6 @@ export const tools: Tool[] = [
     description: "Strip duplicate lines from a block of text.",
     keywords: ["duplicate", "unique", "dedupe", "lines"],
     icon: "ListX",
-    status: "soon",
   },
   {
     slug: "lorem-ipsum-generator",
@@ -73,7 +81,6 @@ export const tools: Tool[] = [
     description: "Generate placeholder text for mockups and layouts.",
     keywords: ["lorem", "ipsum", "placeholder", "dummy text"],
     icon: "FileText",
-    status: "soon",
   },
 
   // ---------- Developer ----------
@@ -82,27 +89,30 @@ export const tools: Tool[] = [
     name: "JSON Formatter",
     category: "developer",
     description: "Format, minify, and validate JSON with clear error messages.",
+    features: ["Format & minify", "Validation with error location"],
     keywords: ["json", "formatter", "beautify", "validate", "minify"],
     icon: "Braces",
-    status: "live",
+    url: "https://json-formatter.52tools.online",
   },
   {
     slug: "html-viewer",
     name: "HTML Viewer",
     category: "developer",
     description: "Edit HTML and preview the rendered output side by side.",
+    features: ["Split-view live preview", "Download as .html"],
     keywords: ["html", "preview", "renderer", "viewer", "editor"],
     icon: "Code2",
-    status: "live",
+    url: "https://html-viewer.52tools.online",
   },
   {
     slug: "uuid-generator",
     name: "UUID Generator",
     category: "developer",
     description: "Generate one or many RFC 4122 v4 UUIDs.",
+    features: ["Bulk generation", "Uppercase / no-dash options"],
     keywords: ["uuid", "guid", "unique id", "generator"],
     icon: "Fingerprint",
-    status: "live",
+    url: "https://uuid-generator.52tools.online",
   },
   {
     slug: "json-validator",
@@ -111,7 +121,6 @@ export const tools: Tool[] = [
     description: "Validate JSON syntax and locate errors precisely.",
     keywords: ["json", "validate", "lint", "syntax check"],
     icon: "CheckCircle2",
-    status: "soon",
   },
   {
     slug: "css-formatter",
@@ -120,7 +129,6 @@ export const tools: Tool[] = [
     description: "Beautify and organize CSS code.",
     keywords: ["css", "formatter", "beautify", "style sheet"],
     icon: "Paintbrush",
-    status: "soon",
   },
   {
     slug: "javascript-formatter",
@@ -129,7 +137,6 @@ export const tools: Tool[] = [
     description: "Format and clean up JavaScript source code.",
     keywords: ["javascript", "js", "formatter", "beautify", "prettify"],
     icon: "FileCode",
-    status: "soon",
   },
   {
     slug: "regex-tester",
@@ -138,7 +145,6 @@ export const tools: Tool[] = [
     description: "Test regular expressions against sample text with live matches.",
     keywords: ["regex", "regexp", "pattern", "match", "test"],
     icon: "Regex",
-    status: "soon",
   },
   {
     slug: "jwt-decoder",
@@ -147,7 +153,6 @@ export const tools: Tool[] = [
     description: "Decode JSON Web Tokens and inspect header and payload.",
     keywords: ["jwt", "token", "decode", "auth"],
     icon: "KeySquare",
-    status: "soon",
   },
   {
     slug: "base64-encoder",
@@ -156,7 +161,6 @@ export const tools: Tool[] = [
     description: "Encode text to Base64 or decode Base64 back to text.",
     keywords: ["base64", "encode", "decode", "binary"],
     icon: "Binary",
-    status: "soon",
   },
 
   // ---------- Image ----------
@@ -167,7 +171,6 @@ export const tools: Tool[] = [
     description: "Reduce image file size while preserving visual quality.",
     keywords: ["image", "compress", "optimize", "size"],
     icon: "ImageDown",
-    status: "soon",
   },
   {
     slug: "image-resizer",
@@ -176,7 +179,6 @@ export const tools: Tool[] = [
     description: "Resize images to exact dimensions or a percentage scale.",
     keywords: ["image", "resize", "dimensions", "scale"],
     icon: "Maximize",
-    status: "soon",
   },
   {
     slug: "image-converter",
@@ -185,7 +187,6 @@ export const tools: Tool[] = [
     description: "Convert images between PNG, JPG, and WebP.",
     keywords: ["image", "convert", "png", "jpg", "webp", "format"],
     icon: "RefreshCcw",
-    status: "soon",
   },
   {
     slug: "image-cropper",
@@ -194,7 +195,6 @@ export const tools: Tool[] = [
     description: "Crop images to a custom or fixed aspect ratio.",
     keywords: ["image", "crop", "aspect ratio", "trim"],
     icon: "Crop",
-    status: "soon",
   },
   {
     slug: "color-picker",
@@ -203,7 +203,6 @@ export const tools: Tool[] = [
     description: "Pick colors and convert between HEX, RGB, and HSL.",
     keywords: ["color", "picker", "hex", "rgb", "hsl", "convert"],
     icon: "Pipette",
-    status: "soon",
   },
 
   // ---------- PDF ----------
@@ -214,7 +213,6 @@ export const tools: Tool[] = [
     description: "Combine multiple PDF files into a single document.",
     keywords: ["pdf", "merge", "combine", "join"],
     icon: "FileStack",
-    status: "soon",
   },
   {
     slug: "pdf-splitter",
@@ -223,7 +221,6 @@ export const tools: Tool[] = [
     description: "Split a PDF into individual pages or ranges.",
     keywords: ["pdf", "split", "extract pages"],
     icon: "Scissors",
-    status: "soon",
   },
   {
     slug: "pdf-compressor",
@@ -232,7 +229,6 @@ export const tools: Tool[] = [
     description: "Reduce PDF file size for easier sharing.",
     keywords: ["pdf", "compress", "reduce size"],
     icon: "FileDown",
-    status: "soon",
   },
   {
     slug: "image-to-pdf",
@@ -241,7 +237,6 @@ export const tools: Tool[] = [
     description: "Convert one or more images into a single PDF.",
     keywords: ["image", "pdf", "convert"],
     icon: "FileImage",
-    status: "soon",
   },
 
   // ---------- Date & Time ----------
@@ -252,7 +247,6 @@ export const tools: Tool[] = [
     description: "Convert between Unix timestamps and human-readable dates.",
     keywords: ["timestamp", "unix", "epoch", "date", "convert"],
     icon: "Clock",
-    status: "soon",
   },
   {
     slug: "date-calculator",
@@ -261,7 +255,6 @@ export const tools: Tool[] = [
     description: "Calculate the difference between two dates.",
     keywords: ["date", "calculator", "difference", "days between"],
     icon: "CalendarRange",
-    status: "soon",
   },
   {
     slug: "timezone-converter",
@@ -270,7 +263,6 @@ export const tools: Tool[] = [
     description: "Convert a time between different time zones.",
     keywords: ["timezone", "time zone", "convert", "utc"],
     icon: "Globe2",
-    status: "soon",
   },
 
   // ---------- Numbers & Math ----------
@@ -281,7 +273,6 @@ export const tools: Tool[] = [
     description: "Calculate percentages, increases, and decreases.",
     keywords: ["percentage", "percent", "calculator"],
     icon: "Percent",
-    status: "soon",
   },
   {
     slug: "unit-converter",
@@ -290,7 +281,6 @@ export const tools: Tool[] = [
     description: "Convert between length, weight, and volume units.",
     keywords: ["unit", "convert", "metric", "imperial"],
     icon: "Ruler",
-    status: "soon",
   },
   {
     slug: "random-number-generator",
@@ -299,7 +289,6 @@ export const tools: Tool[] = [
     description: "Generate random numbers within a custom range.",
     keywords: ["random", "number", "generator"],
     icon: "Dices",
-    status: "soon",
   },
 
   // ---------- Security ----------
@@ -310,7 +299,6 @@ export const tools: Tool[] = [
     description: "Generate strong, random passwords with custom rules.",
     keywords: ["password", "generator", "random", "secure"],
     icon: "KeyRound",
-    status: "soon",
   },
   {
     slug: "hash-generator",
@@ -319,7 +307,6 @@ export const tools: Tool[] = [
     description: "Generate MD5, SHA-1, and SHA-256 hashes from text.",
     keywords: ["hash", "md5", "sha1", "sha256", "checksum"],
     icon: "Lock",
-    status: "soon",
   },
   {
     slug: "url-encoder",
@@ -328,7 +315,6 @@ export const tools: Tool[] = [
     description: "Encode or decode URL components safely.",
     keywords: ["url", "encode", "decode", "uri"],
     icon: "Link2",
-    status: "soon",
   },
 
   // ---------- Web ----------
@@ -339,7 +325,6 @@ export const tools: Tool[] = [
     description: "Break a URL down into its component parts.",
     keywords: ["url", "parser", "parts", "query string"],
     icon: "Link",
-    status: "soon",
   },
   {
     slug: "meta-tag-generator",
@@ -348,24 +333,14 @@ export const tools: Tool[] = [
     description: "Generate SEO and social meta tags for a web page.",
     keywords: ["meta", "seo", "tags", "generator"],
     icon: "Tags",
-    status: "soon",
   },
 ];
-
-export function getToolBySlug(slug: string): Tool | undefined {
-  return tools.find((t) => t.slug === slug);
-}
 
 export function getToolsByCategory(categorySlug: string): Tool[] {
   return tools.filter((t) => t.category === categorySlug);
 }
 
-export function getLiveTools(): Tool[] {
-  return tools.filter((t) => t.status === "live");
-}
-
-export function getRelatedTools(tool: Tool, limit = 4): Tool[] {
-  return tools
-    .filter((t) => t.slug !== tool.slug && t.category === tool.category)
-    .slice(0, limit);
+/** Tools that are actually deployed and can be linked to today. */
+export function getAvailableTools(): Tool[] {
+  return tools.filter((t) => Boolean(t.url));
 }

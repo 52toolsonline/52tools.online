@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://52tools.example.com/sitemap-index.xml
+Sitemap: https://52tools.online/sitemap-index.xml

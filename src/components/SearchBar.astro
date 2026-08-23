@@ -12,14 +12,14 @@ interface Props {
 
 const { size = "compact", placeholder = "Search tools..." } = Astro.props;
 
-const popular = getPopularSearches().map((t) => ({ slug: t.slug, name: t.name, category: t.category }));
+const popular = getPopularSearches().map((t) => ({ slug: t.slug, name: t.name, category: t.category, url: t.url }));
 const toolsData = tools.map((t) => ({
   slug: t.slug,
   name: t.name,
   category: t.category,
   description: t.description,
   keywords: t.keywords,
-  status: t.status,
+  url: t.url ?? null,
 }));
 const categoriesData = categories.map((c) => ({ slug: c.slug, name: c.name, description: c.description }));
 
@@ -128,20 +128,35 @@ const isLarge = size === "large";
   }
 
   function toolRow(tool, index) {
-    const badge =
-      tool.status === "soon"
-        ? '<span class="ml-2 rounded-full border border-[var(--border-color)] px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-wide text-[var(--text-secondary)]">Soon</span>'
-        : "";
+    if (!tool.url) {
+      return `
+        <div
+          role="option"
+          aria-disabled="true"
+          class="flex items-center justify-between gap-3 rounded-[var(--radius-sm)] px-3 py-2.5 text-sm opacity-60"
+        >
+          <span class="flex min-w-0 flex-col">
+            <span class="flex items-center truncate font-medium text-[var(--text-primary)]">
+              ${escapeHtml(tool.name)}
+              <span class="ml-2 rounded-full border border-[var(--border-color)] px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-wide text-[var(--text-secondary)]">Coming soon</span>
+            </span>
+            <span class="truncate text-xs text-[var(--text-secondary)]">${escapeHtml(tool.description)}</span>
+          </span>
+        </div>`;
+    }
+
     return `
       <a
-        href="/tools/${tool.slug}"
+        href="${tool.url}"
+        target="_blank"
+        rel="noopener noreferrer"
         role="option"
         data-search-item
         data-index="${index}"
         class="flex items-center justify-between gap-3 rounded-[var(--radius-sm)] px-3 py-2.5 text-sm text-[var(--text-primary)] hover:bg-[var(--surface)] data-[active=true]:bg-[var(--surface)]"
       >
         <span class="flex min-w-0 flex-col">
-          <span class="flex items-center truncate font-medium">${escapeHtml(tool.name)}${badge}</span>
+          <span class="flex items-center truncate font-medium">${escapeHtml(tool.name)}</span>
           <span class="truncate text-xs text-[var(--text-secondary)]">${escapeHtml(tool.description)}</span>
         </span>
         <span class="shrink-0 font-mono text-[10px] uppercase tracking-wide text-[var(--text-secondary)]">${escapeHtml(
@@ -191,9 +206,13 @@ const isLarge = size === "large";
 
     function renderEmptyPopular() {
       let html = sectionLabel("Popular searches");
-      html += POPULAR.map((tool, i) => toolRow(tool, i)).join("");
+      let index = 0;
+      for (const tool of POPULAR) {
+        html += toolRow(tool, index);
+        index++;
+      }
       content.innerHTML = html;
-      currentItemCount = POPULAR.length;
+      currentItemCount = index;
     }
 
     function renderResults(query) {
@@ -216,8 +235,9 @@ const isLarge = size === "large";
       if (matchedTools.length > 0) {
         html += sectionLabel(`Tools (${matchedTools.length})`);
         for (const tool of matchedTools) {
-          html += toolRow(tool, index);
-          index++;
+          // Only tools with a live external URL are keyboard-navigable/clickable.
+          html += toolRow(tool, tool.url ? index : -1);
+          if (tool.url) index++;
         }
       }
       if (matchedCategories.length > 0) {
@@ -282,7 +302,11 @@ const isLarge = size === "large";
           const el = items[activeIndex];
           if (el instanceof HTMLAnchorElement) {
             e.preventDefault();
-            window.location.href = el.href;
+            if (el.target === "_blank") {
+              window.open(el.href, "_blank", "noopener,noreferrer");
+            } else {
+              window.location.href = el.href;
+            }
           }
         }
       } else if (e.key === "Escape") {

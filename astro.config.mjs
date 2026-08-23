@@ -9,7 +9,7 @@ import sitemap from '@astrojs/sitemap';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://52tools.example.com',
+  site: 'https://52tools.online',
   vite: {
     plugins: [tailwindcss()]
   },

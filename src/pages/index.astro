@@ -5,9 +5,9 @@ import PopularSearches from "../components/PopularSearches.astro";
 import CategoryCard from "../components/CategoryCard.astro";
 import ToolCard from "../components/ToolCard.astro";
 import { categories } from "../data/categories";
-import { getLiveTools } from "../data/tools";
+import { getAvailableTools } from "../data/tools";
 
-const liveTools = getLiveTools();
+const availableTools = getAvailableTools();
 ---
 
 <BaseLayout
@@ -54,8 +54,8 @@ const liveTools = getLiveTools();
   <section class="mx-auto max-w-7xl px-4 pb-24 sm:px-6 lg:px-8">
     <div class="mb-8 flex items-end justify-between">
       <div>
-        <h2 class="font-display text-2xl font-semibold text-[var(--text-primary)]">Ready to use now</h2>
-        <p class="mt-1 text-sm text-[var(--text-secondary)]">Fully functional tools you can use today.</p>
+        <h2 class="font-display text-2xl font-semibold text-[var(--text-primary)]">Available now</h2>
+        <p class="mt-1 text-sm text-[var(--text-secondary)]">Fully deployed tools — each opens in a new tab.</p>
       </div>
       <a
         href="/tools"
@@ -65,7 +65,7 @@ const liveTools = getLiveTools();
       </a>
     </div>
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      {liveTools.map((tool) => <ToolCard tool={tool} />)}
+      {availableTools.map((tool) => <ToolCard tool={tool} />)}
     </div>
   </section>
 </BaseLayout>
