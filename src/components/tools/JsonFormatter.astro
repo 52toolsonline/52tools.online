@@ -1,0 +1,164 @@
+---
+import { Copy, Trash2, Check } from "@lucide/astro";
+---
+
+<div class="rounded-[var(--radius-md)] border border-[var(--border-color)] bg-[var(--surface-raised)] p-5 sm:p-6" data-tool="json-formatter">
+  <div class="mb-2 flex items-center justify-between">
+    <label for="jf-input" class="text-xs font-medium uppercase tracking-wide text-[var(--text-secondary)]">Input</label>
+  </div>
+  <textarea
+    id="jf-input"
+    data-input
+    rows="10"
+    placeholder={'{"paste": "your JSON here"}'}
+    class="w-full resize-y rounded-[var(--radius-sm)] border border-[var(--border-color)] bg-[var(--surface)] p-3 font-mono text-sm text-[var(--text-primary)] outline-none focus:border-[var(--text-primary)]"
+  ></textarea>
+
+  <div class="mt-4 flex flex-wrap gap-2">
+    <button type="button" data-format class="rounded-[var(--radius-sm)] bg-[var(--text-primary)] px-4 py-2 text-sm font-medium text-[var(--surface)] hover:opacity-90">
+      Format
+    </button>
+    <button type="button" data-minify class="rounded-[var(--radius-sm)] border border-[var(--border-color)] px-4 py-2 text-sm font-medium text-[var(--text-primary)] hover:bg-[var(--surface)]">
+      Minify
+    </button>
+    <button type="button" data-validate class="rounded-[var(--radius-sm)] border border-[var(--border-color)] px-4 py-2 text-sm font-medium text-[var(--text-primary)] hover:bg-[var(--surface)]">
+      Validate
+    </button>
+    <button type="button" data-copy class="inline-flex items-center gap-1.5 rounded-[var(--radius-sm)] border border-[var(--border-color)] px-4 py-2 text-sm font-medium text-[var(--text-primary)] hover:bg-[var(--surface)]">
+      <Copy class="h-4 w-4" data-copy-icon aria-hidden="true" />
+      <Check class="hidden h-4 w-4" data-check-icon aria-hidden="true" />
+      <span data-copy-label>Copy</span>
+    </button>
+    <button type="button" data-clear class="inline-flex items-center gap-1.5 rounded-[var(--radius-sm)] border border-[var(--border-color)] px-4 py-2 text-sm font-medium text-[var(--text-primary)] hover:bg-[var(--surface)]">
+      <Trash2 class="h-4 w-4" aria-hidden="true" />
+      Clear
+    </button>
+  </div>
+
+  <div
+    data-status
+    class="mt-4 hidden rounded-[var(--radius-sm)] border px-3 py-2 text-sm"
+  ></div>
+
+  <div class="mt-4">
+    <label for="jf-output" class="mb-1.5 block text-xs font-medium uppercase tracking-wide text-[var(--text-secondary)]">Output</label>
+    <textarea
+      id="jf-output"
+      data-output
+      rows="10"
+      readonly
+      placeholder="Your result will appear here."
+      class="w-full resize-y rounded-[var(--radius-sm)] border border-[var(--border-color)] bg-[var(--surface)] p-3 font-mono text-sm text-[var(--text-primary)] outline-none"
+    ></textarea>
+  </div>
+</div>
+
+<script>
+  function initJsonFormatter(root: HTMLElement) {
+    const input = root.querySelector<HTMLTextAreaElement>("[data-input]")!;
+    const output = root.querySelector<HTMLTextAreaElement>("[data-output]")!;
+    const status = root.querySelector<HTMLElement>("[data-status]")!;
+    const formatBtn = root.querySelector<HTMLButtonElement>("[data-format]")!;
+    const minifyBtn = root.querySelector<HTMLButtonElement>("[data-minify]")!;
+    const validateBtn = root.querySelector<HTMLButtonElement>("[data-validate]")!;
+    const copyBtn = root.querySelector<HTMLButtonElement>("[data-copy]")!;
+    const clearBtn = root.querySelector<HTMLButtonElement>("[data-clear]")!;
+    const copyIcon = root.querySelector<HTMLElement>("[data-copy-icon]")!;
+    const checkIcon = root.querySelector<HTMLElement>("[data-check-icon]")!;
+    const copyLabel = root.querySelector<HTMLElement>("[data-copy-label]")!;
+
+    function locateError(text: string, err: unknown): string {
+      const message = err instanceof Error ? err.message : "Invalid JSON.";
+      const match = message.match(/position (\d+)/);
+      if (!match) return message;
+      const pos = parseInt(match[1], 10);
+      const before = text.slice(0, pos);
+      const line = before.split("\n").length;
+      const col = pos - before.lastIndexOf("\n");
+      return `${message} (line ${line}, column ${col})`;
+    }
+
+    function showStatus(kind: "success" | "error", message: string) {
+      status.textContent = message;
+      status.classList.remove("hidden");
+      if (kind === "success") {
+        status.className =
+          "mt-4 rounded-[var(--radius-sm)] border border-[var(--border-color)] bg-[var(--surface)] px-3 py-2 text-sm text-[var(--text-primary)]";
+      } else {
+        status.className =
+          "mt-4 rounded-[var(--radius-sm)] border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700 dark:border-red-900 dark:bg-red-950 dark:text-red-400";
+      }
+    }
+
+    function hideStatus() {
+      status.classList.add("hidden");
+    }
+
+    formatBtn.addEventListener("click", () => {
+      if (!input.value.trim()) {
+        showStatus("error", "Enter some JSON to get started.");
+        output.value = "";
+        return;
+      }
+      try {
+        const parsed = JSON.parse(input.value);
+        output.value = JSON.stringify(parsed, null, 2);
+        hideStatus();
+      } catch (err) {
+        output.value = "";
+        showStatus("error", locateError(input.value, err));
+      }
+    });
+
+    minifyBtn.addEventListener("click", () => {
+      if (!input.value.trim()) {
+        showStatus("error", "Enter some JSON to get started.");
+        output.value = "";
+        return;
+      }
+      try {
+        const parsed = JSON.parse(input.value);
+        output.value = JSON.stringify(parsed);
+        hideStatus();
+      } catch (err) {
+        output.value = "";
+        showStatus("error", locateError(input.value, err));
+      }
+    });
+
+    validateBtn.addEventListener("click", () => {
+      if (!input.value.trim()) {
+        showStatus("error", "Enter some JSON to get started.");
+        return;
+      }
+      try {
+        JSON.parse(input.value);
+        showStatus("success", "Valid JSON.");
+      } catch (err) {
+        showStatus("error", locateError(input.value, err));
+      }
+    });
+
+    clearBtn.addEventListener("click", () => {
+      input.value = "";
+      output.value = "";
+      hideStatus();
+      input.focus();
+    });
+
+    copyBtn.addEventListener("click", async () => {
+      if (!output.value) return;
+      await navigator.clipboard.writeText(output.value);
+      copyIcon.classList.add("hidden");
+      checkIcon.classList.remove("hidden");
+      copyLabel.textContent = "Copied";
+      setTimeout(() => {
+        copyIcon.classList.remove("hidden");
+        checkIcon.classList.add("hidden");
+        copyLabel.textContent = "Copy";
+      }, 1500);
+    });
+  }
+
+  document.querySelectorAll<HTMLElement>('[data-tool="json-formatter"]').forEach(initJsonFormatter);
+</script>

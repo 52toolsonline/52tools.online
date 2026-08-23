@@ -1,0 +1,100 @@
+---
+import { Copy, RefreshCw, Check } from "@lucide/astro";
+---
+
+<div class="rounded-[var(--radius-md)] border border-[var(--border-color)] bg-[var(--surface-raised)] p-5 sm:p-6" data-tool="uuid-generator">
+  <div class="flex flex-wrap items-end gap-4">
+    <div>
+      <label for="ug-count" class="mb-1.5 block text-xs font-medium uppercase tracking-wide text-[var(--text-secondary)]">Quantity</label>
+      <input
+        id="ug-count"
+        type="number"
+        data-count
+        min="1"
+        max="100"
+        value="1"
+        class="w-24 rounded-[var(--radius-sm)] border border-[var(--border-color)] bg-[var(--surface)] px-3 py-2 text-sm text-[var(--text-primary)] outline-none focus:border-[var(--text-primary)]"
+      />
+    </div>
+    <label class="flex items-center gap-2 pb-2.5 text-sm text-[var(--text-primary)]">
+      <input type="checkbox" data-uppercase class="h-4 w-4 rounded border-[var(--border-color)]" />
+      Uppercase
+    </label>
+    <label class="flex items-center gap-2 pb-2.5 text-sm text-[var(--text-primary)]">
+      <input type="checkbox" data-no-dashes class="h-4 w-4 rounded border-[var(--border-color)]" />
+      Remove dashes
+    </label>
+    <button
+      type="button"
+      data-generate
+      class="ml-auto inline-flex items-center gap-1.5 rounded-[var(--radius-sm)] bg-[var(--text-primary)] px-4 py-2 text-sm font-medium text-[var(--surface)] hover:opacity-90"
+    >
+      <RefreshCw class="h-4 w-4" aria-hidden="true" />
+      Generate
+    </button>
+  </div>
+
+  <div class="mt-4">
+    <div class="mb-1.5 flex items-center justify-between">
+      <span class="text-xs font-medium uppercase tracking-wide text-[var(--text-secondary)]">Result</span>
+      <button type="button" data-copy-all class="inline-flex items-center gap-1.5 rounded-[var(--radius-sm)] border border-[var(--border-color)] px-3 py-1 text-xs font-medium text-[var(--text-primary)] hover:bg-[var(--surface)]">
+        <Copy class="h-3.5 w-3.5" data-copy-icon aria-hidden="true" />
+        <Check class="hidden h-3.5 w-3.5" data-check-icon aria-hidden="true" />
+        <span data-copy-label>Copy all</span>
+      </button>
+    </div>
+    <textarea
+      data-output
+      rows="8"
+      readonly
+      class="w-full resize-y rounded-[var(--radius-sm)] border border-[var(--border-color)] bg-[var(--surface)] p-3 font-mono text-sm text-[var(--text-primary)] outline-none"
+    ></textarea>
+  </div>
+</div>
+
+<script>
+  function initUuidGenerator(root: HTMLElement) {
+    const countInput = root.querySelector<HTMLInputElement>("[data-count]")!;
+    const uppercase = root.querySelector<HTMLInputElement>("[data-uppercase]")!;
+    const noDashes = root.querySelector<HTMLInputElement>("[data-no-dashes]")!;
+    const output = root.querySelector<HTMLTextAreaElement>("[data-output]")!;
+    const generateBtn = root.querySelector<HTMLButtonElement>("[data-generate]")!;
+    const copyBtn = root.querySelector<HTMLButtonElement>("[data-copy-all]")!;
+    const copyIcon = root.querySelector<HTMLElement>("[data-copy-icon]")!;
+    const checkIcon = root.querySelector<HTMLElement>("[data-check-icon]")!;
+    const copyLabel = root.querySelector<HTMLElement>("[data-copy-label]")!;
+
+    function generate() {
+      const count = Math.min(100, Math.max(1, parseInt(countInput.value, 10) || 1));
+      const ids: string[] = [];
+      for (let i = 0; i < count; i++) {
+        let id: string = crypto.randomUUID();
+        if (noDashes.checked) id = id.replace(/-/g, "");
+        if (uppercase.checked) id = id.toUpperCase();
+        ids.push(id);
+      }
+      output.value = ids.join("\n");
+    }
+
+    generateBtn.addEventListener("click", generate);
+    uppercase.addEventListener("change", generate);
+    noDashes.addEventListener("change", generate);
+
+    copyBtn.addEventListener("click", async () => {
+      if (!output.value) return;
+      await navigator.clipboard.writeText(output.value);
+      copyIcon.classList.add("hidden");
+      checkIcon.classList.remove("hidden");
+      copyLabel.textContent = "Copied";
+      setTimeout(() => {
+        copyIcon.classList.remove("hidden");
+        checkIcon.classList.add("hidden");
+        copyLabel.textContent = "Copy all";
+      }, 1500);
+    });
+
+    generate();
+  }
+
+  document.querySelectorAll<HTMLElement>('[data-tool="uuid-generator"]').forEach(initUuidGenerator);
+</script>

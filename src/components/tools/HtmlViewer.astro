@@ -1,0 +1,107 @@
+---
+import { Trash2, Download } from "@lucide/astro";
+---
+
+<div class="rounded-[var(--radius-md)] border border-[var(--border-color)] bg-[var(--surface-raised)] p-5 sm:p-6" data-tool="html-viewer">
+  <div class="mb-4 flex flex-wrap items-center justify-between gap-2">
+    <div class="inline-flex rounded-[var(--radius-sm)] border border-[var(--border-color)] p-0.5">
+      <button type="button" data-view="split" class="rounded-[calc(var(--radius-sm)-2px)] px-3 py-1.5 text-sm font-medium" aria-pressed="true">
+        Split
+      </button>
+      <button type="button" data-view="code" class="rounded-[calc(var(--radius-sm)-2px)] px-3 py-1.5 text-sm font-medium" aria-pressed="false">
+        Code
+      </button>
+      <button type="button" data-view="preview" class="rounded-[calc(var(--radius-sm)-2px)] px-3 py-1.5 text-sm font-medium" aria-pressed="false">
+        Preview
+      </button>
+    </div>
+    <div class="flex gap-2">
+      <button type="button" data-download class="inline-flex items-center gap-1.5 rounded-[var(--radius-sm)] border border-[var(--border-color)] px-3 py-1.5 text-sm font-medium text-[var(--text-primary)] hover:bg-[var(--surface)]">
+        <Download class="h-4 w-4" aria-hidden="true" />
+        Download
+      </button>
+      <button type="button" data-clear class="inline-flex items-center gap-1.5 rounded-[var(--radius-sm)] border border-[var(--border-color)] px-3 py-1.5 text-sm font-medium text-[var(--text-primary)] hover:bg-[var(--surface)]">
+        <Trash2 class="h-4 w-4" aria-hidden="true" />
+        Clear
+      </button>
+    </div>
+  </div>
+
+  <div data-panels class="grid grid-cols-1 gap-4 md:grid-cols-2">
+    <div data-panel="code">
+      <label for="hv-input" class="mb-1.5 block text-xs font-medium uppercase tracking-wide text-[var(--text-secondary)]">HTML</label>
+      <textarea
+        id="hv-input"
+        data-input
+        rows="14"
+        placeholder="<h1>Hello, world</h1>"
+        class="w-full resize-y rounded-[var(--radius-sm)] border border-[var(--border-color)] bg-[var(--surface)] p-3 font-mono text-sm text-[var(--text-primary)] outline-none focus:border-[var(--text-primary)]"
+      ></textarea>
+    </div>
+    <div data-panel="preview">
+      <span class="mb-1.5 block text-xs font-medium uppercase tracking-wide text-[var(--text-secondary)]">Preview</span>
+      <iframe
+        data-preview
+        title="HTML preview"
+        sandbox=""
+        class="h-[336px] w-full rounded-[var(--radius-sm)] border border-[var(--border-color)] bg-white"
+      ></iframe>
+    </div>
+  </div>
+</div>
+
+<script>
+  function initHtmlViewer(root: HTMLElement) {
+    const input = root.querySelector<HTMLTextAreaElement>("[data-input]")!;
+    const preview = root.querySelector<HTMLIFrameElement>("[data-preview]")!;
+    const clearBtn = root.querySelector<HTMLButtonElement>("[data-clear]")!;
+    const downloadBtn = root.querySelector<HTMLButtonElement>("[data-download]")!;
+    const panels = root.querySelector<HTMLElement>("[data-panels]")!;
+    const codePanel = root.querySelector<HTMLElement>('[data-panel="code"]')!;
+    const previewPanel = root.querySelector<HTMLElement>('[data-panel="preview"]')!;
+    const viewButtons = root.querySelectorAll<HTMLButtonElement>("[data-view]");
+
+    function renderPreview() {
+      preview.srcdoc = input.value;
+    }
+
+    function setView(view: string) {
+      viewButtons.forEach((btn) => {
+        const active = btn.dataset.view === view;
+        btn.setAttribute("aria-pressed", String(active));
+        btn.classList.toggle("bg-[var(--surface)]", active);
+        btn.classList.toggle("text-[var(--text-primary)]", active);
+        btn.classList.toggle("text-[var(--text-secondary)]", !active);
+      });
+      panels.classList.toggle("md:grid-cols-2", view === "split");
+      panels.classList.toggle("md:grid-cols-1", view !== "split");
+      codePanel.classList.toggle("hidden", view === "preview");
+      previewPanel.classList.toggle("hidden", view === "code");
+    }
+
+    viewButtons.forEach((btn) => btn.addEventListener("click", () => setView(btn.dataset.view!)));
+
+    input.addEventListener("input", renderPreview);
+
+    clearBtn.addEventListener("click", () => {
+      input.value = "";
+      renderPreview();
+      input.focus();
+    });
+
+    downloadBtn.addEventListener("click", () => {
+      const blob = new Blob([input.value], { type: "text/html" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "page.html";
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    setView("split");
+    renderPreview();
+  }
+
+  document.querySelectorAll<HTMLElement>('[data-tool="html-viewer"]').forEach(initHtmlViewer);
+</script>

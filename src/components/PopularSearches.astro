@@ -1,0 +1,19 @@
+---
+import { getPopularSearches } from "../lib/search";
+
+const popular = getPopularSearches();
+---
+
+<div class="flex flex-wrap items-center justify-center gap-2">
+  <span class="mr-1 font-mono text-xs uppercase tracking-wide text-[var(--text-secondary)]">Popular:</span>
+  {
+    popular.map((tool) => (
+      <a
+        href={`/tools/${tool.slug}`}
+        class="rounded-full border border-[var(--border-color)] px-3 py-1.5 text-xs font-medium text-[var(--text-secondary)] transition-colors hover:border-[var(--text-primary)] hover:text-[var(--text-primary)]"
+      >
+        {tool.name}
+      </a>
+    ))
+  }
+</div>

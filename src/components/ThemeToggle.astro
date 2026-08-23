@@ -1,0 +1,32 @@
+---
+import { Sun, Moon } from "@lucide/astro";
+---
+
+<button
+  id="theme-toggle"
+  type="button"
+  aria-label="Toggle dark mode"
+  class="inline-flex h-9 w-9 items-center justify-center rounded-[var(--radius-sm)] border border-[var(--border-color)] text-[var(--text-primary)] transition-colors hover:bg-[var(--surface-raised)] focus-visible:outline-2 focus-visible:outline-[var(--text-primary)]"
+>
+  <Sun class="hidden h-4 w-4 dark:block" aria-hidden="true" />
+  <Moon class="block h-4 w-4 dark:hidden" aria-hidden="true" />
+</button>
+
+<script>
+  const STORAGE_KEY = "52tools-theme";
+
+  function applyTheme(theme: "light" | "dark") {
+    document.documentElement.classList.toggle("dark", theme === "dark");
+  }
+
+  function currentTheme(): "light" | "dark" {
+    return document.documentElement.classList.contains("dark") ? "dark" : "light";
+  }
+
+  const toggle = document.getElementById("theme-toggle");
+  toggle?.addEventListener("click", () => {
+    const next = currentTheme() === "dark" ? "light" : "dark";
+    applyTheme(next);
+    localStorage.setItem(STORAGE_KEY, next);
+  });
+</script>

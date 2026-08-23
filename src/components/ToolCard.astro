@@ -1,0 +1,43 @@
+---
+import * as icons from "@lucide/astro";
+import { ArrowUpRight } from "@lucide/astro";
+import type { Tool } from "../data/tools";
+
+interface Props {
+  tool: Tool;
+}
+
+const { tool } = Astro.props;
+
+// icons module is keyed by PascalCase icon names, matching our data.
+const IconComponent = (icons as Record<string, any>)[tool.icon] ?? icons.Wrench;
+---
+
+<a
+  href={`/tools/${tool.slug}`}
+  class="group relative flex flex-col rounded-[var(--radius-md)] border border-[var(--border-color)] bg-[var(--surface-raised)] p-5 transition-colors hover:border-[var(--text-primary)] focus-visible:outline-2 focus-visible:outline-[var(--text-primary)]"
+>
+  <div class="flex items-start justify-between">
+    <span
+      class="flex h-9 w-9 items-center justify-center rounded-[var(--radius-sm)] border border-[var(--border-color)] text-[var(--text-primary)]"
+    >
+      <IconComponent class="h-4 w-4" aria-hidden="true" />
+    </span>
+    <ArrowUpRight
+      class="h-4 w-4 text-[var(--text-secondary)] opacity-0 transition-opacity group-hover:opacity-100"
+      aria-hidden="true"
+    />
+  </div>
+
+  <h3 class="mt-4 font-display text-sm font-semibold text-[var(--text-primary)]">
+    {tool.name}
+    {
+      tool.status === "soon" && (
+        <span class="ml-2 rounded-full border border-[var(--border-color)] px-1.5 py-0.5 align-middle font-mono text-[10px] uppercase tracking-wide text-[var(--text-secondary)]">
+          Soon
+        </span>
+      )
+    }
+  </h3>
+  <p class="mt-1.5 text-sm leading-relaxed text-[var(--text-secondary)]">{tool.description}</p>
+</a>

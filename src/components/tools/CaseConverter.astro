@@ -1,0 +1,138 @@
+---
+import { Copy, Trash2, Check } from "@lucide/astro";
+
+const cases = [
+  { key: "upper", label: "UPPERCASE" },
+  { key: "lower", label: "lowercase" },
+  { key: "title", label: "Title Case" },
+  { key: "sentence", label: "Sentence case" },
+  { key: "camel", label: "camelCase" },
+  { key: "pascal", label: "PascalCase" },
+  { key: "snake", label: "snake_case" },
+  { key: "kebab", label: "kebab-case" },
+];
+---
+
+<div class="rounded-[var(--radius-md)] border border-[var(--border-color)] bg-[var(--surface-raised)] p-5 sm:p-6" data-tool="case-converter">
+  <label for="cc-input" class="mb-1.5 block text-xs font-medium uppercase tracking-wide text-[var(--text-secondary)]">Input</label>
+  <textarea
+    id="cc-input"
+    data-input
+    rows="4"
+    placeholder="Type or paste text here..."
+    class="w-full resize-y rounded-[var(--radius-sm)] border border-[var(--border-color)] bg-[var(--surface)] p-3 text-sm text-[var(--text-primary)] outline-none focus:border-[var(--text-primary)]"
+  ></textarea>
+
+  <div class="mt-4 flex flex-wrap gap-2">
+    {
+      cases.map((c) => (
+        <button
+          type="button"
+          data-case={c.key}
+          class="rounded-[var(--radius-sm)] border border-[var(--border-color)] px-3 py-1.5 text-sm font-medium text-[var(--text-primary)] hover:bg-[var(--surface)]"
+        >
+          {c.label}
+        </button>
+      ))
+    }
+  </div>
+
+  <div class="mt-4">
+    <div class="mb-1.5 flex items-center justify-between">
+      <label for="cc-output" class="text-xs font-medium uppercase tracking-wide text-[var(--text-secondary)]">Output</label>
+      <div class="flex gap-2">
+        <button type="button" data-copy class="inline-flex items-center gap-1.5 rounded-[var(--radius-sm)] border border-[var(--border-color)] px-3 py-1 text-xs font-medium text-[var(--text-primary)] hover:bg-[var(--surface)]">
+          <Copy class="h-3.5 w-3.5" data-copy-icon aria-hidden="true" />
+          <Check class="hidden h-3.5 w-3.5" data-check-icon aria-hidden="true" />
+          <span data-copy-label>Copy</span>
+        </button>
+        <button type="button" data-clear class="inline-flex items-center gap-1.5 rounded-[var(--radius-sm)] border border-[var(--border-color)] px-3 py-1 text-xs font-medium text-[var(--text-primary)] hover:bg-[var(--surface)]">
+          <Trash2 class="h-3.5 w-3.5" aria-hidden="true" />
+          Clear
+        </button>
+      </div>
+    </div>
+    <textarea
+      id="cc-output"
+      data-output
+      rows="4"
+      readonly
+      placeholder="Your result will appear here."
+      class="w-full resize-y rounded-[var(--radius-sm)] border border-[var(--border-color)] bg-[var(--surface)] p-3 text-sm text-[var(--text-primary)] outline-none"
+    ></textarea>
+  </div>
+</div>
+
+<script>
+  function toWords(text: string): string[] {
+    return text
+      .replace(/([a-z])([A-Z])/g, "$1 $2")
+      .split(/[\s_-]+/)
+      .filter(Boolean);
+  }
+
+  const converters: Record<string, (text: string) => string> = {
+    upper: (t) => t.toUpperCase(),
+    lower: (t) => t.toLowerCase(),
+    title: (t) =>
+      toWords(t)
+        .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+        .join(" "),
+    sentence: (t) => {
+      const lower = t.toLowerCase();
+      return lower.replace(/(^\s*\w|[.!?]\s*\w)/g, (m) => m.toUpperCase());
+    },
+    camel: (t) => {
+      const words = toWords(t).map((w) => w.toLowerCase());
+      return words
+        .map((w, i) => (i === 0 ? w : w.charAt(0).toUpperCase() + w.slice(1)))
+        .join("");
+    },
+    pascal: (t) =>
+      toWords(t)
+        .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+        .join(""),
+    snake: (t) => toWords(t).map((w) => w.toLowerCase()).join("_"),
+    kebab: (t) => toWords(t).map((w) => w.toLowerCase()).join("-"),
+  };
+
+  function initCaseConverter(root: HTMLElement) {
+    const input = root.querySelector<HTMLTextAreaElement>("[data-input]")!;
+    const output = root.querySelector<HTMLTextAreaElement>("[data-output]")!;
+    const clearBtn = root.querySelector<HTMLButtonElement>("[data-clear]")!;
+    const copyBtn = root.querySelector<HTMLButtonElement>("[data-copy]")!;
+    const copyIcon = root.querySelector<HTMLElement>("[data-copy-icon]")!;
+    const checkIcon = root.querySelector<HTMLElement>("[data-check-icon]")!;
+    const copyLabel = root.querySelector<HTMLElement>("[data-copy-label]")!;
+    const caseButtons = root.querySelectorAll<HTMLButtonElement>("[data-case]");
+
+    caseButtons.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const key = btn.dataset.case!;
+        const converter = converters[key];
+        if (converter) output.value = converter(input.value);
+      });
+    });
+
+    clearBtn.addEventListener("click", () => {
+      input.value = "";
+      output.value = "";
+      input.focus();
+    });
+
+    copyBtn.addEventListener("click", async () => {
+      if (!output.value) return;
+      await navigator.clipboard.writeText(output.value);
+      copyIcon.classList.add("hidden");
+      checkIcon.classList.remove("hidden");
+      copyLabel.textContent = "Copied";
+      setTimeout(() => {
+        copyIcon.classList.remove("hidden");
+        checkIcon.classList.add("hidden");
+        copyLabel.textContent = "Copy";
+      }, 1500);
+    });
+  }
+
+  document.querySelectorAll<HTMLElement>('[data-tool="case-converter"]').forEach(initCaseConverter);
+</script>
