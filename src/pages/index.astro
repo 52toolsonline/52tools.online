@@ -1,71 +1,17 @@
 ---
-import BaseLayout from "../layouts/BaseLayout.astro";
-import SearchBar from "../components/SearchBar.astro";
-import PopularSearches from "../components/PopularSearches.astro";
-import CategoryCard from "../components/CategoryCard.astro";
-import ToolCard from "../components/ToolCard.astro";
-import { categories } from "../data/categories";
-import { getAvailableTools } from "../data/tools";
-
-const availableTools = getAvailableTools();
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/Hero.astro';
+import Categories from '../components/Categories.astro';
+import PopularTools from '../components/PopularTools.astro';
+import FeatureStrip from '../components/FeatureStrip.astro';
 ---
-
 <BaseLayout
-  title="52 Tools"
-  description="A precise, fast collection of tools for creators, developers, and problem solvers. Search and use practical web utilities without unnecessary complexity."
-  path="/"
+  title="52 Tools. One Place."
+  description="Free, fast, and easy-to-use online tools for your everyday tasks."
+  currentPath="/"
 >
-  <section class="mx-auto max-w-3xl px-4 pb-16 pt-20 text-center sm:px-6 sm:pt-28 lg:px-8">
-    <h1 class="text-balance font-display text-4xl font-semibold leading-tight text-[var(--text-primary)] sm:text-5xl">
-      Tools for everything.<br />All in one place.
-    </h1>
-    <p class="mx-auto mt-5 max-w-xl text-balance text-base leading-relaxed text-[var(--text-secondary)]">
-      52 Tools is a precise, fast collection of practical web utilities — formatters, converters, generators,
-      and more. No accounts. No clutter. Just tools that work.
-    </p>
-
-    <div class="mx-auto mt-10 max-w-xl">
-      <SearchBar size="large" placeholder="Search for a tool, e.g. JSON Formatter" />
-    </div>
-
-    <div class="mt-6">
-      <PopularSearches />
-    </div>
-  </section>
-
-  <section class="mx-auto max-w-7xl px-4 pb-20 sm:px-6 lg:px-8">
-    <div class="mb-8 flex items-end justify-between">
-      <div>
-        <h2 class="font-display text-2xl font-semibold text-[var(--text-primary)]">Browse by category</h2>
-        <p class="mt-1 text-sm text-[var(--text-secondary)]">Every tool, organized by what it's for.</p>
-      </div>
-      <a
-        href="/categories"
-        class="hidden text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] sm:block"
-      >
-        View all →
-      </a>
-    </div>
-    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-      {categories.map((category) => <CategoryCard category={category} />)}
-    </div>
-  </section>
-
-  <section class="mx-auto max-w-7xl px-4 pb-24 sm:px-6 lg:px-8">
-    <div class="mb-8 flex items-end justify-between">
-      <div>
-        <h2 class="font-display text-2xl font-semibold text-[var(--text-primary)]">Available now</h2>
-        <p class="mt-1 text-sm text-[var(--text-secondary)]">Fully deployed tools — each opens in a new tab.</p>
-      </div>
-      <a
-        href="/tools"
-        class="hidden text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] sm:block"
-      >
-        View all tools →
-      </a>
-    </div>
-    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      {availableTools.map((tool) => <ToolCard tool={tool} />)}
-    </div>
-  </section>
+  <Hero />
+  <Categories />
+  <PopularTools />
+  <FeatureStrip />
 </BaseLayout>
